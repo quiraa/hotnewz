@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_news_app/features/news/presentation/bloc/article/remote/remote_article_bloc.dart';
-import 'package:flutter_news_app/features/news/presentation/bloc/article/remote/remote_article_state.dart';
+import 'package:flutter_news_app/config/routes/screen_routes.dart';
+import 'package:flutter_news_app/news/domain/entities/article_entity.dart';
+import 'package:flutter_news_app/news/presentation/bloc/remote/remote_article_bloc.dart';
+import 'package:flutter_news_app/news/presentation/bloc/remote/remote_article_state.dart';
+import 'package:flutter_news_app/news/presentation/widgets/news_card_item.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -20,6 +23,7 @@ class HomePage extends StatelessWidget {
         'NewsApp',
         style: TextStyle(color: Colors.black),
       ),
+      surfaceTintColor: Colors.transparent,
     );
   }
 
@@ -35,16 +39,25 @@ class HomePage extends StatelessWidget {
       }
 
       if (state is RemoteArticlesSuccess) {
-        return ListView.builder(
+        return ListView.separated(
+          padding: const EdgeInsets.all(16.0),
+          separatorBuilder: (context, index) => const SizedBox(
+            height: 8.0,
+          ),
           itemCount: state.articles!.length,
           itemBuilder: (context, index) {
-            return ListTile(
-              title: Text('{$index}'),
+            return NewsCardItem(
+              article: state.articles![index],
+              onArticleClick: (article) => _onArticlePressed(context, article),
             );
           },
         );
       }
       return const SizedBox();
     });
+  }
+
+  void _onArticlePressed(BuildContext context, ArticleEntity article) {
+    Navigator.pushNamed(context, ScreenRoutes.detail, arguments: article);
   }
 }

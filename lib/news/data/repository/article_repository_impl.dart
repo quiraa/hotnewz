@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_news_app/core/constants/constants.dart';
 import 'package:flutter_news_app/core/resources/data_state.dart';
-import 'package:flutter_news_app/features/news/data/models/article_models.dart';
-import 'package:flutter_news_app/features/news/data/sources/remote/api_service.dart';
-import 'package:flutter_news_app/features/news/domain/repository/article_repository.dart';
+import 'package:flutter_news_app/news/data/models/article_models.dart';
+import 'package:flutter_news_app/news/data/sources/remote/api_service.dart';
+import 'package:flutter_news_app/news/domain/repository/article_repository.dart';
 
 class ArticleRepositoryImpl implements ArticleRepository {
   final ApiService apiService;

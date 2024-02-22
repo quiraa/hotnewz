@@ -1,14 +1,8 @@
-import 'package:floor/floor.dart';
-import 'package:flutter_news_app/core/constants/constants.dart';
-import 'package:flutter_news_app/features/news/domain/entities/article_entity.dart';
+import 'package:flutter_news_app/news/domain/entities/article_entity.dart';
 
-@Entity(tableName: 'article', primaryKeys: ['id'])
 class ArticleModel extends ArticleEntity {
-  @override
-  final Source? source;
-
   const ArticleModel({
-    int? id,
+    Source? source,
     String? author,
     String? title,
     String? description,
@@ -16,9 +10,8 @@ class ArticleModel extends ArticleEntity {
     String? urlToImage,
     String? publishedAt,
     String? content,
-    this.source,
   }) : super(
-          id: id,
+          source: source,
           author: author,
           title: title,
           description: description,
@@ -30,30 +23,27 @@ class ArticleModel extends ArticleEntity {
 
   factory ArticleModel.fromJson(Map<String, dynamic> json) {
     return ArticleModel(
+      source: Source.fromJson(json['source']),
       author: json['author'] ?? '',
       title: json['title'] ?? '',
       description: json['description'] ?? '',
       url: json['url'] ?? '',
-      urlToImage: json['urlToImage'] != null && json['urlToImage'] != ''
-          ? json['urlToImage']
-          : Constants.defaultImage,
+      urlToImage: json['urlToImage'] ?? '',
       publishedAt: json['publishedAt'] ?? '',
       content: json['content'] ?? '',
-      source: Source.fromJson(json['source']),
     );
   }
 
   factory ArticleModel.fromEntity(ArticleEntity entity) {
     return ArticleModel(
-      id: entity.id,
+      source: entity.source,
       author: entity.author,
-      title: entity.title,
+      title: entity.author,
       description: entity.description,
       url: entity.url,
       urlToImage: entity.urlToImage,
       publishedAt: entity.publishedAt,
       content: entity.content,
-      source: entity.source,
     );
   }
 }

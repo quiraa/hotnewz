@@ -32,10 +32,10 @@ class _ApiService implements ApiService {
       r'country': country,
       r'category': category,
     };
-    queryParameters.removeWhere((k, v) => v == null);
+    queryParameters.removeWhere((key, value) => value == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _result = await _dio.fetch<List<dynamic>>(
+    final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<HttpResponse<List<ArticleModel>>>(Options(
       method: 'GET',
       headers: _headers,
@@ -52,7 +52,8 @@ class _ApiService implements ApiService {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    var value = _result.data!
+    List<dynamic> articlesJson = _result.data!['articles'];
+    List<ArticleModel> value = articlesJson
         .map((dynamic i) => ArticleModel.fromJson(i as Map<String, dynamic>))
         .toList();
     final httpResponse = HttpResponse(value, _result);

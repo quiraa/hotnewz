@@ -2,7 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_news_app/features/news/domain/entities/article_entity.dart';
+import 'package:flutter_news_app/news/domain/entities/article_entity.dart';
 
 abstract class RemoteArticleState extends Equatable {
   final List<ArticleEntity>? articles;

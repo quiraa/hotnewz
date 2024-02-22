@@ -1,7 +1,7 @@
 import 'package:flutter_news_app/core/resources/data_state.dart';
-import 'package:flutter_news_app/features/news/domain/usecase/get_article_usecase.dart';
-import 'package:flutter_news_app/features/news/presentation/bloc/article/remote/remote_article_event.dart';
-import 'package:flutter_news_app/features/news/presentation/bloc/article/remote/remote_article_state.dart';
+import 'package:flutter_news_app/news/domain/usecase/get_article_usecase.dart';
+import 'package:flutter_news_app/news/presentation/bloc/remote/remote_article_event.dart';
+import 'package:flutter_news_app/news/presentation/bloc/remote/remote_article_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RemoteArticleBloc extends Bloc<RemoteArticleEvent, RemoteArticleState> {
@@ -9,10 +9,10 @@ class RemoteArticleBloc extends Bloc<RemoteArticleEvent, RemoteArticleState> {
 
   RemoteArticleBloc(this.getArticleUseCase)
       : super(const RemoteArticlesLoading()) {
-    on<GetArticles>(onGetArtcile);
+    on<GetArticles>(onGetArticle);
   }
 
-  void onGetArtcile(GetArticles event, Emitter<RemoteArticleState> emit) async {
+  void onGetArticle(GetArticles event, Emitter<RemoteArticleState> emit) async {
     final dataState = await getArticleUseCase();
 
     if (dataState is DataSuccess && dataState.data!.isNotEmpty) {
