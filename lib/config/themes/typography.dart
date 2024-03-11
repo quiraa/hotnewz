@@ -7,6 +7,18 @@ class NewsTypography {
     overflow: TextOverflow.ellipsis,
   );
 
+  static const channelCardTitle = TextStyle(
+    fontSize: 16.0,
+    fontWeight: FontWeight.w700,
+    overflow: TextOverflow.clip,
+  );
+
+  static const channelCardDescription = TextStyle(
+    fontSize: 13.0,
+    fontWeight: FontWeight.w400,
+    overflow: TextOverflow.clip,
+  );
+
   static const newsCardDescription = TextStyle(
     fontSize: 14.0,
     fontWeight: FontWeight.w400,

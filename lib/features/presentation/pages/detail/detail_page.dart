@@ -1,0 +1,149 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_news_app/config/routes/app_router.dart';
+import 'package:flutter_news_app/config/routes/screen_routes.dart';
+import 'package:flutter_news_app/config/themes/typography.dart';
+import 'package:flutter_news_app/core/utils/utils.dart';
+import 'package:flutter_news_app/features/domain/entities/article_entity.dart';
+
+class DetailPage extends HookWidget {
+  final ArticleEntity? article;
+
+  const DetailPage({
+    Key? key,
+    required this.article,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _appBar(context),
+      body: _buildBody(context),
+    );
+  }
+
+  PreferredSizeWidget _appBar(BuildContext context) {
+    return AppBar(
+      surfaceTintColor: Colors.transparent,
+      leading: IconButton(
+        onPressed: () => AppRouter().pop(context),
+        icon: const Icon(Icons.arrow_back_ios_new),
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildTitleAndDate(),
+          _buildBodyImage(),
+          _buildBodyContent(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SizedBox(
+              width: double.maxFinite,
+              child: FilledButton.tonal(
+                onPressed: () {
+                  AppRouter().push(
+                    context,
+                    ScreenRoutes.article,
+                    arguments: article?.url ?? '',
+                  );
+                },
+                child: const Text(
+                  'Read More',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTitleAndDate() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            article?.title ?? '',
+            style: NewsTypography.articleTitle,
+          ),
+          const SizedBox(
+            height: 8.0,
+          ),
+          Row(
+            children: [
+              const Icon(Icons.timeline, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                Utils().formatDateAndTime(article?.publishedAt ?? ''),
+                style: NewsTypography.articleDate,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(Icons.person, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                article?.author ?? '',
+                style: NewsTypography.articleDate,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBodyImage() {
+    return CachedNetworkImage(
+      imageUrl: article?.urlToImage ?? '',
+      placeholder: (context, url) => Container(
+        margin: const EdgeInsets.all(32),
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(),
+      ),
+      errorWidget: (context, url, error) => Container(
+        color: Colors.grey.withOpacity(0.1),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.image_not_supported),
+            SizedBox(
+              height: 8.0,
+            ),
+            Text(
+              'No Image Provided',
+              textAlign: TextAlign.center,
+            )
+          ],
+        ),
+      ),
+      width: double.maxFinite,
+      height: 300.0,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget _buildBodyContent() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Text(
+        '${article!.description ?? ''}\n\n${article!.content ?? ''}',
+        style: NewsTypography.articleDescription,
+      ),
+    );
+  }
+}
