@@ -1,4 +1,4 @@
-# flutter_news_app
+# hotnewz
 
 A new Flutter project.
 
