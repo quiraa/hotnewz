@@ -13,13 +13,16 @@ class RemoteArticleBloc extends Bloc<RemoteArticleEvent, RemoteArticleState> {
     this.getArticleUseCase,
     this.searchArticleUseCase,
   ) : super(const RemoteArticlesLoading()) {
-    on<GetArticles>(onGetArticle);
+    on<GetArticlesByCategory>(onGetArticle);
     on<SearchArticles>(onSearchArticle);
   }
 
-  void onGetArticle(GetArticles event, Emitter<RemoteArticleState> emit) async {
+  void onGetArticle(
+      GetArticlesByCategory event, Emitter<RemoteArticleState> emit) async {
     emit(const RemoteArticlesLoading());
-    final articles = await getArticleUseCase();
+    final articles = await getArticleUseCase(
+      params: event.category,
+    );
 
     if (articles is DataSuccess && articles.data!.isNotEmpty) {
       emit(RemoteArticlesSuccess(articles.data!));

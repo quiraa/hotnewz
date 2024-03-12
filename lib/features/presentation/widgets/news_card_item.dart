@@ -2,7 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_news_app/config/themes/typography.dart';
 import 'package:flutter_news_app/core/utils/utils.dart';
-import 'package:flutter_news_app/features/domain/entities/article_entity.dart';
+import 'package:flutter_news_app/features/domain/entity/article_entity.dart';
+import 'package:ionicons/ionicons.dart';
 
 class AvailableNewsContent extends StatelessWidget {
   final List<ArticleEntity> articles;
@@ -80,13 +81,14 @@ class NewsCardItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.image_not_supported),
+            Icon(Ionicons.alert_circle),
             SizedBox(
               height: 8.0,
             ),
             Text(
               'No Image Provided',
               textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.w600),
             )
           ],
         ),
@@ -129,7 +131,7 @@ class NewsCardItem extends StatelessWidget {
                 const WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
                   child: Icon(
-                    Icons.timeline_rounded,
+                    Ionicons.time_outline,
                     size: 20.0,
                   ),
                 ),

@@ -2,21 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_news_app/config/routes/app_router.dart';
 import 'package:flutter_news_app/config/routes/screen_routes.dart';
-import 'package:flutter_news_app/features/domain/entities/article_entity.dart';
+import 'package:flutter_news_app/config/themes/typography.dart';
+import 'package:flutter_news_app/features/domain/entity/article_entity.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_bloc.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_event.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_state.dart';
 import 'package:flutter_news_app/features/presentation/widgets/news_card_item.dart';
 import 'package:flutter_news_app/features/presentation/widgets/search_field.dart';
+import 'package:icons_flutter/icons_flutter.dart';
 
-class DiscoverPage extends StatefulWidget {
-  const DiscoverPage({Key? key}) : super(key: key);
+class DiscoverPage extends StatelessWidget {
+  DiscoverPage({Key? key}) : super(key: key);
 
-  @override
-  _DiscoverPageState createState() => _DiscoverPageState();
-}
-
-class _DiscoverPageState extends State<DiscoverPage> {
   final _searchController = TextEditingController();
 
   @override
@@ -67,7 +64,22 @@ class _DiscoverPageState extends State<DiscoverPage> {
             );
 
           default:
-            return const SizedBox();
+            return const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    FontAwesome.newspaper_o,
+                    size: 48,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Search News',
+                    style: NewsTypography.articleTitle,
+                  ),
+                ],
+              ),
+            );
         }
       },
     );
@@ -78,7 +90,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   }
 }
 
-class SearchContent extends StatefulWidget {
+class SearchContent extends StatelessWidget {
   final List<ArticleEntity> searchedArticles;
   final void Function(ArticleEntity article) onArticleClicked;
 
@@ -89,17 +101,12 @@ class SearchContent extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SearchContentState createState() => _SearchContentState();
-}
-
-class _SearchContentState extends State<SearchContent> {
-  @override
   Widget build(BuildContext context) {
-    switch (widget.searchedArticles.isNotEmpty) {
+    switch (searchedArticles.isNotEmpty) {
       case true:
         return AvailableNewsContent(
-          articles: widget.searchedArticles,
-          onArticleClicked: widget.onArticleClicked,
+          articles: searchedArticles,
+          onArticleClicked: onArticleClicked,
         );
 
       case false:

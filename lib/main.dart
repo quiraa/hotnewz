@@ -19,11 +19,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<RemoteArticleBloc>(
-      create: (context) => injection()..add(const GetArticles()),
+      create: (context) => injection()..add(GetArticlesByCategory('general')),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'News App',
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.light,
         darkTheme: NewsTheme().darkTheme(),
         theme: NewsTheme().lightTheme(),
         onGenerateRoute: RoutesConfiguration().generateRoute,

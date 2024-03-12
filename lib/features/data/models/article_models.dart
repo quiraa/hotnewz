@@ -1,4 +1,4 @@
-import 'package:flutter_news_app/features/domain/entities/article_entity.dart';
+import 'package:flutter_news_app/features/domain/entity/article_entity.dart';
 
 class ArticleModel extends ArticleEntity {
   const ArticleModel({

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 
 class SearchField extends StatefulWidget {
   final TextEditingController searchController;
@@ -34,7 +35,7 @@ class _SearchFieldState extends State<SearchField> {
         prefixIcon: IconButton(
           onPressed: widget.onSearch,
           icon: const Icon(
-            Icons.search_rounded,
+            Ionicons.search,
           ),
         ),
         contentPadding: const EdgeInsets.all(16),

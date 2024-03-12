@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_news_app/features/presentation/pages/news/discover_page.dart';
 import 'package:flutter_news_app/features/presentation/pages/news/favorite_page.dart';
 import 'package:flutter_news_app/features/presentation/pages/news/news_page.dart';
+import 'package:ionicons/ionicons.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -32,18 +33,18 @@ class _HomePageState extends State<HomePage> {
       selectedIndex: _selectedIndex,
       destinations: const <Widget>[
         NavigationDestination(
-          selectedIcon: Icon(Icons.feed),
-          icon: Icon(Icons.feed_outlined),
+          selectedIcon: Icon(Ionicons.newspaper),
+          icon: Icon(Ionicons.newspaper_outline),
           label: 'News',
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.explore_rounded),
-          icon: Icon(Icons.explore_outlined),
+          selectedIcon: Icon(Ionicons.compass),
+          icon: Icon(Ionicons.compass_outline),
           label: 'Discover',
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.bookmarks_rounded),
-          icon: Icon(Icons.bookmarks_outlined),
+          selectedIcon: Icon(Ionicons.bookmarks),
+          icon: Icon(Ionicons.bookmarks_outline),
           label: 'Bookmark',
         ),
       ],
@@ -51,9 +52,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  static const _screenOptions = <Widget>[
-    NewsPage(),
+  static final _screenOptions = <Widget>[
+    const NewsPage(),
     DiscoverPage(),
-    FavoritePage(),
+    const FavoritePage(),
   ];
 }

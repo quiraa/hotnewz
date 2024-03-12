@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_news_app/config/routes/app_router.dart';
 import 'package:flutter_news_app/config/routes/screen_routes.dart';
-import 'package:flutter_news_app/features/domain/entities/article_entity.dart';
+import 'package:flutter_news_app/features/domain/entity/article_entity.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_bloc.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_event.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_state.dart';
 import 'package:flutter_news_app/features/presentation/widgets/news_card_item.dart';
-import 'package:flutter_news_app/injection.dart';
+import 'package:icons_flutter/icons_flutter.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({Key? key}) : super(key: key);
@@ -17,16 +17,38 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
+  final items = <CategoryItemChoice>[
+    CategoryItemChoice(0, 'General'),
+    CategoryItemChoice(1, 'Entertainment'),
+    CategoryItemChoice(2, 'Technology'),
+    CategoryItemChoice(3, 'Business'),
+    CategoryItemChoice(4, 'Health'),
+    CategoryItemChoice(5, 'Science'),
+    CategoryItemChoice(6, 'Sports'),
+  ];
+
+  int selectedId = 0;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   BlocProvider.of<RemoteArticleBloc>(context).add(
+  //     GetArticlesByCategory('general'),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<RemoteArticleBloc>(
-      create: (context) => injection()..add(const GetArticles()),
-      child: Scaffold(
-        appBar: _buildAppBar(),
-        body: _buildBody(),
-        drawer: const NewsPageDrawer(),
-        drawerEnableOpenDragGesture: true,
+    return Scaffold(
+      appBar: _buildAppBar(),
+      body: Column(
+        children: [
+          _buildCategoryChips(context),
+          Expanded(child: _buildBody()),
+        ],
       ),
+      drawer: const NewsPageDrawer(),
+      drawerEnableOpenDragGesture: true,
     );
   }
 
@@ -34,6 +56,37 @@ class _NewsPageState extends State<NewsPage> {
     return AppBar(
       title: const Text('Top Headlines'),
       surfaceTintColor: Colors.transparent,
+    );
+  }
+
+  Widget _buildCategoryChips(BuildContext context) {
+    return SizedBox(
+      height: 48.0,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        primary: true,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            child: Wrap(
+              spacing: 8.0,
+              children: items.map((item) {
+                return ChoiceChip(
+                  label: Text(item.label),
+                  selected: selectedId == item.id,
+                  onSelected: (_) => setState(() {
+                    selectedId = item.id;
+                    BlocProvider.of<RemoteArticleBloc>(context).add(
+                      GetArticlesByCategory(item.label.toLowerCase()),
+                    );
+                  }),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -89,18 +142,6 @@ class NewsContent extends StatefulWidget {
 }
 
 class _NewsContentState extends State<NewsContent> {
-  final listChoices = <CategoryItemChoice>[
-    CategoryItemChoice(1, 'General'),
-    CategoryItemChoice(2, 'Entertainment'),
-    CategoryItemChoice(3, 'Technology'),
-    CategoryItemChoice(4, 'Business'),
-    CategoryItemChoice(5, 'Health'),
-    CategoryItemChoice(6, 'Science'),
-    CategoryItemChoice(7, 'Sports'),
-  ];
-
-  int idSelected = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,31 +152,6 @@ class _NewsContentState extends State<NewsContent> {
   Widget _buildBody(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          height: 48.0,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            primary: true,
-            children: [
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                child: Wrap(
-                  spacing: 8.0,
-                  children: listChoices.map((item) {
-                    return ChoiceChip(
-                      label: Text(item.label),
-                      selected: idSelected == item.id,
-                      onSelected: (_) => setState(() {
-                        idSelected = item.id;
-                      }),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ],
-          ),
-        ),
         const SizedBox(height: 16),
         Expanded(child: _buildListArticle()),
       ],
@@ -217,7 +233,7 @@ class NewsPageDrawer extends StatelessWidget {
       runSpacing: 16.0,
       children: [
         ListTile(
-          leading: const Icon(Icons.settings_rounded),
+          leading: const Icon(Ionicons.md_settings),
           title: const Text('Settings'),
           onTap: () {
             Navigator.of(context).pop();

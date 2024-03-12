@@ -15,27 +15,18 @@ Future<void> initializeDependencies() async {
   injection.registerSingleton<ApiService>(ApiService(injection()));
 
   injection.registerSingleton<ArticleRepository>(
-    ArticleRepositoryImpl(
-      injection(),
-    ),
+    ArticleRepositoryImpl(injection()),
   );
 
   injection.registerSingleton<GetArticleUseCase>(
-    GetArticleUseCase(
-      injection(),
-    ),
+    GetArticleUseCase(injection()),
   );
 
   injection.registerSingleton<SearchArticleUseCase>(
-    SearchArticleUseCase(
-      injection(),
-    ),
+    SearchArticleUseCase(injection()),
   );
 
   injection.registerFactory<RemoteArticleBloc>(
-    () => RemoteArticleBloc(
-      injection(),
-      injection(),
-    ),
+    () => RemoteArticleBloc(injection(), injection()),
   );
 }

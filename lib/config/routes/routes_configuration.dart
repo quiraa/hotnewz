@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_news_app/config/routes/screen_routes.dart';
-import 'package:flutter_news_app/features/domain/entities/article_entity.dart';
+import 'package:flutter_news_app/features/domain/entity/article_entity.dart';
 import 'package:flutter_news_app/features/presentation/pages/detail/detail_page.dart';
 import 'package:flutter_news_app/features/presentation/pages/home_page.dart';
 import 'package:flutter_news_app/features/presentation/pages/settings_page.dart';

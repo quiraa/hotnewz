@@ -1,7 +1,8 @@
 abstract class RemoteArticleEvent {
   final String? query;
+  final String? category;
 
-  const RemoteArticleEvent({this.query});
+  const RemoteArticleEvent({this.query, this.category});
 }
 
 class GetArticles extends RemoteArticleEvent {
@@ -10,4 +11,8 @@ class GetArticles extends RemoteArticleEvent {
 
 class SearchArticles extends RemoteArticleEvent {
   const SearchArticles(String query) : super(query: query);
+}
+
+class GetArticlesByCategory extends RemoteArticleEvent {
+  GetArticlesByCategory(String category) : super(category: category);
 }

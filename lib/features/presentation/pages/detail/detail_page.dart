@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_news_app/config/routes/app_router.dart';
 import 'package:flutter_news_app/config/routes/screen_routes.dart';
 import 'package:flutter_news_app/config/themes/typography.dart';
 import 'package:flutter_news_app/core/utils/utils.dart';
-import 'package:flutter_news_app/features/domain/entities/article_entity.dart';
+import 'package:flutter_news_app/features/domain/entity/article_entity.dart';
+import 'package:ionicons/ionicons.dart';
 
 class DetailPage extends HookWidget {
   final ArticleEntity? article;
@@ -28,7 +30,7 @@ class DetailPage extends HookWidget {
       surfaceTintColor: Colors.transparent,
       leading: IconButton(
         onPressed: () => AppRouter().pop(context),
-        icon: const Icon(Icons.arrow_back_ios_new),
+        icon: const Icon(Ionicons.chevron_back),
       ),
     );
   }
@@ -42,7 +44,11 @@ class DetailPage extends HookWidget {
           _buildBodyImage(),
           _buildBodyContent(),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: 16,
+            ),
             child: SizedBox(
               width: double.maxFinite,
               child: FilledButton.tonal(
@@ -83,22 +89,26 @@ class DetailPage extends HookWidget {
           ),
           Row(
             children: [
-              const Icon(Icons.timeline, size: 20),
+              const Icon(Ionicons.time_outline, size: 20),
               const SizedBox(width: 8),
-              Text(
-                Utils().formatDateAndTime(article?.publishedAt ?? ''),
-                style: NewsTypography.articleDate,
+              Expanded(
+                child: Text(
+                  Utils().formatDateAndTime(article?.publishedAt ?? ''),
+                  style: NewsTypography.articleDate,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.person, size: 20),
+              const Icon(Ionicons.person_circle_outline, size: 20),
               const SizedBox(width: 8),
-              Text(
-                article?.author ?? '',
-                style: NewsTypography.articleDate,
+              Expanded(
+                child: Text(
+                  article?.author ?? '',
+                  style: NewsTypography.articleDate,
+                ),
               ),
             ],
           ),
