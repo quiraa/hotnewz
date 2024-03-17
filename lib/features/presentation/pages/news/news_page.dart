@@ -1,13 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_news_app/config/routes/app_router.dart';
-import 'package:flutter_news_app/config/routes/screen_routes.dart';
+import 'package:flutter_news_app/core/constants/constants.dart';
 import 'package:flutter_news_app/features/domain/entity/article_entity.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_bloc.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_event.dart';
+import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_state.dart';
+import 'package:flutter_news_app/features/presentation/pages/detail/detail_page.dart';
+import 'package:flutter_news_app/features/presentation/pages/settings_page.dart';
 import 'package:flutter_news_app/features/presentation/widgets/news_card_item.dart';
+
+import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:icons_flutter/icons_flutter.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({Key? key}) : super(key: key);
@@ -17,76 +23,69 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
-  final items = <CategoryItemChoice>[
-    CategoryItemChoice(0, 'General'),
-    CategoryItemChoice(1, 'Entertainment'),
-    CategoryItemChoice(2, 'Technology'),
-    CategoryItemChoice(3, 'Business'),
-    CategoryItemChoice(4, 'Health'),
-    CategoryItemChoice(5, 'Science'),
-    CategoryItemChoice(6, 'Sports'),
-  ];
-
   int selectedId = 0;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   BlocProvider.of<RemoteArticleBloc>(context).add(
-  //     GetArticlesByCategory('general'),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: Column(
+    return SliderDrawer(
+      animationDuration: 200,
+      appBar: _buildAppBar(context),
+      slider: SingleChildScrollView(
+        child: Column(
+          children: [
+            buildDrawerHeader(context),
+            buildDrawerContent(context),
+          ],
+        ),
+      ),
+      child: Column(
         children: [
-          _buildCategoryChips(context),
+          _buildCategoryChips(),
           Expanded(child: _buildBody()),
         ],
       ),
-      drawer: const NewsPageDrawer(),
-      drawerEnableOpenDragGesture: true,
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: const Text('Top Headlines'),
-      surfaceTintColor: Colors.transparent,
-    );
-  }
-
-  Widget _buildCategoryChips(BuildContext context) {
-    return SizedBox(
-      height: 48.0,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        primary: true,
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            child: Wrap(
-              spacing: 8.0,
-              children: items.map((item) {
-                return ChoiceChip(
-                  label: Text(item.label),
-                  selected: selectedId == item.id,
-                  onSelected: (_) => setState(() {
-                    selectedId = item.id;
-                    BlocProvider.of<RemoteArticleBloc>(context).add(
-                      GetArticlesByCategory(item.label.toLowerCase()),
-                    );
-                  }),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
+  SliderAppBar _buildAppBar(BuildContext context) {
+    return const SliderAppBar(
+      title: Text(
+        'Top Headlines',
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w500,
+        ),
       ),
+      appBarHeight: 86,
+      isTitleCenter: false,
+      drawerIconSize: 24,
+      appBarPadding: EdgeInsets.only(top: 40),
+    );
+  }
+
+  Widget _buildCategoryChips() {
+    return ChipsChoice<int>.single(
+      value: selectedId,
+      choiceCheckmark: true,
+      onChanged: (value) {
+        setState(() => selectedId = value);
+        selectedId = value;
+        BlocProvider.of<RemoteArticleBloc>(context).add(
+          GetArticlesByCategory(Constants.newsCategories[value].toLowerCase()),
+        );
+      },
+      choiceItems: C2Choice.listFrom<int, String>(
+        source: Constants.newsCategories,
+        value: (i, v) => i,
+        label: (i, v) => v,
+      ),
+      choiceStyle: C2ChipStyle.outlined(
+        borderRadius: BorderRadius.circular(18),
+        height: 36,
+        selectedStyle: C2ChipStyle.filled(),
+        checkmarkStyle: C2ChipCheckmarkStyle.round,
+      ),
+      scrollToSelectedOnChanged: true,
     );
   }
 
@@ -96,7 +95,7 @@ class _NewsPageState extends State<NewsPage> {
         switch (state.runtimeType) {
           case RemoteArticlesLoading:
             return const Center(
-              child: CircularProgressIndicator(),
+              child: CupertinoActivityIndicator(),
             );
 
           case RemoteArticlesError:
@@ -110,9 +109,8 @@ class _NewsPageState extends State<NewsPage> {
           case RemoteArticlesSuccess:
             return NewsContent(
               articles: state.articles ?? [],
-              onArticleClicked: (article) {
-                _onArticlePressed(context, article);
-              },
+              onArticleClicked: (article) =>
+                  _onArticlePressed(context, article),
             );
 
           default:
@@ -123,7 +121,70 @@ class _NewsPageState extends State<NewsPage> {
   }
 
   void _onArticlePressed(BuildContext context, ArticleEntity article) {
-    AppRouter().push(context, ScreenRoutes.detail, arguments: article);
+    PersistentNavBarNavigator.pushNewScreen(
+      context,
+      screen: DetailPage(article: article),
+      withNavBar: false,
+    );
+  }
+
+  Widget buildDrawerHeader(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      color: Theme.of(context).colorScheme.primary,
+      width: double.maxFinite,
+      height: 240,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 86,
+            height: 86,
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Text(
+                'U',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Username',
+              style: TextStyle(
+                fontSize: 18.0,
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildDrawerContent(BuildContext context) {
+    return Wrap(
+      runSpacing: 16.0,
+      children: [
+        ListTile(
+          leading: const Icon(CupertinoIcons.settings_solid),
+          title: const Text('Settings'),
+          onTap: () {
+            Navigator.of(context).pop();
+            PersistentNavBarNavigator.pushNewScreen(
+              context,
+              screen: const SettingsPage(),
+              withNavBar: false,
+            );
+          },
+        ),
+      ],
+    );
   }
 }
 
@@ -172,82 +233,86 @@ class _NewsContentState extends State<NewsContent> {
   }
 }
 
-class NewsPageDrawer extends StatelessWidget {
-  const NewsPageDrawer({Key? key}) : super(key: key);
+// class NewsPageDrawer extends StatelessWidget {
+//   const NewsPageDrawer({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            buildDrawerHeader(context),
-            buildDrawerContent(context),
-          ],
-        ),
-      ),
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Drawer(
+//       child: SingleChildScrollView(
+//         child: Column(
+//           children: [
+//             buildDrawerHeader(context),
+//             buildDrawerContent(context),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
 
-  Widget buildDrawerHeader(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-      color: Theme.of(context).colorScheme.primary,
-      width: double.maxFinite,
-      height: 240,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 86,
-            height: 86,
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Text(
-                'U',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              'Username',
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+//   Widget buildDrawerHeader(BuildContext context) {
+//     return Container(
+//       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+//       color: Theme.of(context).colorScheme.primary,
+//       width: double.maxFinite,
+//       height: 240,
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           SizedBox(
+//             width: 86,
+//             height: 86,
+//             child: CircleAvatar(
+//               backgroundColor: Colors.white,
+//               child: Text(
+//                 'U',
+//                 style: TextStyle(
+//                   fontSize: 24,
+//                   color: Theme.of(context).colorScheme.primary,
+//                 ),
+//               ),
+//             ),
+//           ),
+//           Padding(
+//             padding: const EdgeInsets.all(16),
+//             child: Text(
+//               'Username',
+//               style: TextStyle(
+//                 fontSize: 18.0,
+//                 color: Theme.of(context).colorScheme.onPrimary,
+//                 fontWeight: FontWeight.w600,
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
 
-  Widget buildDrawerContent(BuildContext context) {
-    return Wrap(
-      runSpacing: 16.0,
-      children: [
-        ListTile(
-          leading: const Icon(Ionicons.md_settings),
-          title: const Text('Settings'),
-          onTap: () {
-            Navigator.of(context).pop();
-            AppRouter().push(context, ScreenRoutes.settings);
-          },
-        ),
-      ],
-    );
-  }
-}
+//   Widget buildDrawerContent(BuildContext context) {
+//     return Wrap(
+//       runSpacing: 16.0,
+//       children: [
+//         ListTile(
+//           leading: const Icon(Ionicons.md_settings),
+//           title: const Text('Settings'),
+//           onTap: () {
+//             Navigator.of(context).pop();
+//             PersistentNavBarNavigator.pushNewScreen(
+//               context,
+//               screen: const SettingsPage(),
+//               withNavBar: false,
+//             );
+//           },
+//         ),
+//       ],
+//     );
+//   }
+// }
 
-class CategoryItemChoice {
-  final int id;
-  final String label;
+// class CategoryItemChoice {
+//   final int id;
+//   final String label;
 
-  CategoryItemChoice(this.id, this.label);
-}
+//   CategoryItemChoice(this.id, this.label);
+// }

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_news_app/config/themes/typography.dart';
 import 'package:flutter_news_app/core/utils/utils.dart';
@@ -18,15 +19,15 @@ class AvailableNewsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsets.only(right: 16, left: 16, bottom: 16),
+      padding: const EdgeInsets.only(bottom: 16),
       separatorBuilder: (context, index) {
-        return const SizedBox(height: 8.0);
+        return const SizedBox(height: 16.0);
       },
       itemCount: articles.length,
       itemBuilder: (context, index) {
         return NewsCardItem(
           article: articles[index],
-          onArticleClick: onArticleClicked,
+          onArticlePressed: onArticleClicked,
         );
       },
     );
@@ -34,125 +35,135 @@ class AvailableNewsContent extends StatelessWidget {
 }
 
 class NewsCardItem extends StatelessWidget {
-  final ArticleEntity article;
-  final void Function(ArticleEntity article) onArticleClick;
+  final ArticleEntity? article;
+  final void Function(ArticleEntity article)? onArticlePressed;
 
   const NewsCardItem({
     Key? key,
-    required this.article,
-    required this.onArticleClick,
+    this.article,
+    this.onArticlePressed,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => _onArticleClicked(),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _onTap,
+      child: Container(
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
+        height: MediaQuery.of(context).size.width / 2.2,
         child: Row(
           children: [
-            Expanded(
-              flex: 2,
-              child: _buildImageBody(context),
-            ),
-            const SizedBox(
-              width: 8.0,
-            ),
-            Expanded(
-              flex: 4,
-              child: _buildInformationBody(),
-            )
+            _buildImage(context),
+            _buildTitleAndDescription(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildImageBody(BuildContext context) {
+  Widget _buildImage(BuildContext context) {
     return CachedNetworkImage(
-      imageUrl: article.urlToImage ?? '',
-      placeholder: (context, url) => Container(
-        margin: const EdgeInsets.all(32.0),
-        child: const CircularProgressIndicator(),
-      ),
-      errorWidget: (context, url, error) => Container(
-        color: Colors.grey.withOpacity(0.1),
-        child: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          // crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Ionicons.alert_circle),
-            SizedBox(
-              height: 8.0,
-            ),
-            Text(
-              'No Image Provided',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.w600),
-            )
-          ],
+      imageUrl: article!.urlToImage!,
+      imageBuilder: (context, imageProvider) => Padding(
+        padding: const EdgeInsetsDirectional.only(end: 14),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width / 3,
+            height: double.maxFinite,
+            decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.08),
+                image:
+                    DecorationImage(image: imageProvider, fit: BoxFit.cover)),
+          ),
         ),
       ),
-      width: 128.0,
-      height: 186.0,
-      fit: BoxFit.cover,
+      progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
+        padding: const EdgeInsetsDirectional.only(end: 14),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width / 3,
+            height: double.maxFinite,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.08),
+            ),
+            child: const CupertinoActivityIndicator(),
+          ),
+        ),
+      ),
+      errorWidget: (context, url, error) => Padding(
+        padding: const EdgeInsetsDirectional.only(end: 14),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width / 3,
+            height: double.maxFinite,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.08),
+            ),
+            child: const Icon(Icons.image_not_supported_rounded),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildInformationBody() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            article.title ?? '',
-            maxLines: 3,
-            style: NewsTypography.newsCardTitle,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(
-            height: 8.0,
-          ),
-          Text(
-            article.description ?? '',
-            maxLines: 2,
-            style: NewsTypography.newsCardDescription,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(
-            height: 8.0,
-          ),
-          Text.rich(
-            textAlign: TextAlign.start,
-            TextSpan(
+  Widget _buildTitleAndDescription() {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 7),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title
+            Text(
+              article!.title ?? '',
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: 'Butler',
+                fontWeight: FontWeight.w900,
+                fontSize: 18,
+                color: Colors.black87,
+              ),
+            ),
+
+            // Description
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  article!.description ?? '',
+                  maxLines: 2,
+                ),
+              ),
+            ),
+
+            // Datetime
+            Row(
               children: [
-                const WidgetSpan(
-                  alignment: PlaceholderAlignment.middle,
-                  child: Icon(
-                    Ionicons.time_outline,
-                    size: 20.0,
+                const Icon(Icons.timeline_outlined, size: 16),
+                const SizedBox(width: 4),
+                Text(
+                  Utils().formatDate(article!.publishedAt!),
+                  style: const TextStyle(
+                    fontSize: 12,
                   ),
-                ),
-                const WidgetSpan(
-                  child: SizedBox(
-                    width: 8.0,
-                  ),
-                ),
-                TextSpan(
-                  text: Utils().formatDate(article.publishedAt ?? ''),
-                  style: NewsTypography.newsCardDate,
                 ),
               ],
             ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  void _onArticleClicked() {
-    onArticleClick(article);
+  void _onTap() {
+    if (onArticlePressed != null) {
+      onArticlePressed!(article!);
+    }
   }
 }

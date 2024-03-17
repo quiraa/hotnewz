@@ -24,11 +24,6 @@ class RemoteArticlesSuccess extends RemoteArticleState {
       : super(articles: articles);
 }
 
-class SearchArticleSuccess extends RemoteArticleState {
-  const SearchArticleSuccess(List<ArticleEntity> articles)
-      : super(articles: articles);
-}
-
 class RemoteArticlesError extends RemoteArticleState {
   const RemoteArticlesError(DioException error) : super(error: error);
 }

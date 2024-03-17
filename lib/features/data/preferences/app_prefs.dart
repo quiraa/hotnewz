@@ -1,17 +1,17 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppPreference {
-  static const categoryKey = 'categoryKey';
+  static const countryKey = 'countryKey';
   static const themeKey = 'themeKey';
 
-  static Future<int?> getCategory() async {
+  static Future<String?> getCountry() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(categoryKey);
+    return prefs.getString(countryKey);
   }
 
-  static Future<void> setCategory(int selectedId) async {
+  static Future<void> setCountry(String country) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(categoryKey, selectedId);
+    await prefs.setString(countryKey, country);
   }
 
   static Future<bool?> getTheme() async {

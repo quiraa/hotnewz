@@ -18,7 +18,7 @@ class RoutesConfiguration {
       case ScreenRoutes.home:
         return _getPageRoute(
           routeName: settings.name,
-          screen: const HomePage(),
+          screen: HomePage(),
         );
 
       case ScreenRoutes.detail:
