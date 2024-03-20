@@ -1,10 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_news_app/config/themes/typography.dart';
 import 'package:flutter_news_app/core/utils/utils.dart';
 import 'package:flutter_news_app/features/domain/entity/article_entity.dart';
-import 'package:ionicons/ionicons.dart';
 
 class AvailableNewsContent extends StatelessWidget {
   final List<ArticleEntity> articles;
@@ -149,9 +147,7 @@ class NewsCardItem extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   Utils().formatDate(article!.publishedAt!),
-                  style: const TextStyle(
-                    fontSize: 12,
-                  ),
+                  style: const TextStyle(fontSize: 12),
                 ),
               ],
             ),

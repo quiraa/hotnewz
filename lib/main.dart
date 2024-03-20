@@ -7,6 +7,7 @@ import 'package:flutter_news_app/config/themes/theme.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_bloc.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_event.dart';
 import 'package:flutter_news_app/features/presentation/bloc/search/search_article_bloc.dart';
+import 'package:flutter_news_app/features/presentation/pages/news_page.dart';
 import 'package:flutter_news_app/injection.dart';
 
 Future<void> main() async {
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         theme: NewsTheme().lightTheme(),
         onGenerateRoute: RoutesConfiguration().generateRoute,
         initialRoute: ScreenRoutes.home,
+        home: const NewsPage(),
       ),
     );
   }

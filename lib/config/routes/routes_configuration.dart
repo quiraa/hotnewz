@@ -1,14 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_news_app/config/routes/screen_routes.dart';
 import 'package:flutter_news_app/features/domain/entity/article_entity.dart';
-import 'package:flutter_news_app/features/presentation/pages/detail/detail_page.dart';
-import 'package:flutter_news_app/features/presentation/pages/home_page.dart';
+import 'package:flutter_news_app/features/presentation/pages/detail_page.dart';
+import 'package:flutter_news_app/features/presentation/pages/news_page.dart';
 import 'package:flutter_news_app/features/presentation/pages/settings_page.dart';
-import 'package:flutter_news_app/features/presentation/pages/webview/article_webview.dart';
+import 'package:flutter_news_app/features/presentation/pages/article_webview.dart';
 
 class RoutesConfiguration {
   PageRoute _getPageRoute({String? routeName, Widget? screen}) {
-    return MaterialPageRoute(
+    return CupertinoPageRoute(
         settings: RouteSettings(name: routeName),
         builder: (context) => screen!);
   }
@@ -18,7 +19,7 @@ class RoutesConfiguration {
       case ScreenRoutes.home:
         return _getPageRoute(
           routeName: settings.name,
-          screen: HomePage(),
+          screen: const NewsPage(),
         );
 
       case ScreenRoutes.detail:

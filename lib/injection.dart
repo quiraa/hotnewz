@@ -54,7 +54,7 @@ Future<void> initializeDependencies() async {
   );
 
   injection.registerFactory<SearchArticleBloc>(
-    () => SearchArticleBloc(injection(), injection()),
+    () => SearchArticleBloc(injection()),
   );
 
   injection.registerFactory<LocalArticleBloc>(

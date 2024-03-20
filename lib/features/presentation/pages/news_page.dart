@@ -1,13 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_news_app/config/routes/app_router.dart';
+import 'package:flutter_news_app/config/routes/screen_routes.dart';
 import 'package:flutter_news_app/core/constants/constants.dart';
 import 'package:flutter_news_app/features/domain/entity/article_entity.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_bloc.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_event.dart';
 import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter_news_app/features/presentation/bloc/remote/remote_article_state.dart';
-import 'package:flutter_news_app/features/presentation/pages/detail/detail_page.dart';
+import 'package:flutter_news_app/features/presentation/bloc/search/search_article_bloc.dart';
+import 'package:flutter_news_app/features/presentation/bloc/search/search_article_event.dart';
+import 'package:flutter_news_app/features/presentation/bloc/search/search_article_state.dart';
+import 'package:flutter_news_app/features/presentation/pages/detail_page.dart';
 import 'package:flutter_news_app/features/presentation/pages/settings_page.dart';
 import 'package:flutter_news_app/features/presentation/widgets/news_card_item.dart';
 
@@ -27,29 +32,31 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SliderDrawer(
-      animationDuration: 200,
-      appBar: _buildAppBar(context),
-      slider: SingleChildScrollView(
+    return Scaffold(
+      body: SliderDrawer(
+        animationDuration: 200,
+        appBar: _buildAppBar(context),
+        slider: SingleChildScrollView(
+          child: Column(
+            children: [
+              buildDrawerHeader(context),
+              buildDrawerContent(context),
+            ],
+          ),
+        ),
         child: Column(
           children: [
-            buildDrawerHeader(context),
-            buildDrawerContent(context),
+            _buildCategoryChips(),
+            Expanded(child: _buildBody()),
           ],
         ),
-      ),
-      child: Column(
-        children: [
-          _buildCategoryChips(),
-          Expanded(child: _buildBody()),
-        ],
       ),
     );
   }
 
   SliderAppBar _buildAppBar(BuildContext context) {
-    return const SliderAppBar(
-      title: Text(
+    return SliderAppBar(
+      title: const Text(
         'Top Headlines',
         style: TextStyle(
           fontSize: 20,
@@ -59,7 +66,15 @@ class _NewsPageState extends State<NewsPage> {
       appBarHeight: 86,
       isTitleCenter: false,
       drawerIconSize: 24,
-      appBarPadding: EdgeInsets.only(top: 40),
+      trailing: Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: IconButton(
+          onPressed: () =>
+              showSearch(context: context, delegate: SearchBarDelegate()),
+          icon: const Icon(CupertinoIcons.search),
+        ),
+      ),
+      appBarPadding: const EdgeInsets.only(top: 40),
     );
   }
 
@@ -213,7 +228,6 @@ class _NewsContentState extends State<NewsContent> {
   Widget _buildBody(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 16),
         Expanded(child: _buildListArticle()),
       ],
     );
@@ -233,86 +247,91 @@ class _NewsContentState extends State<NewsContent> {
   }
 }
 
-// class NewsPageDrawer extends StatelessWidget {
-//   const NewsPageDrawer({Key? key}) : super(key: key);
+class SearchBarDelegate extends SearchDelegate<String> {
+  final List<String> suggestions = [
+    'Election Day',
+    'Palestine',
+    'Ramadhan',
+  ];
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Drawer(
-//       child: SingleChildScrollView(
-//         child: Column(
-//           children: [
-//             buildDrawerHeader(context),
-//             buildDrawerContent(context),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  @override
+  List<Widget>? buildActions(BuildContext context) => [
+        IconButton(
+          onPressed: () {
+            query = '';
+            close(context, '');
+          },
+          icon: const Icon(Icons.clear),
+        ),
+      ];
 
-//   Widget buildDrawerHeader(BuildContext context) {
-//     return Container(
-//       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-//       color: Theme.of(context).colorScheme.primary,
-//       width: double.maxFinite,
-//       height: 240,
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           SizedBox(
-//             width: 86,
-//             height: 86,
-//             child: CircleAvatar(
-//               backgroundColor: Colors.white,
-//               child: Text(
-//                 'U',
-//                 style: TextStyle(
-//                   fontSize: 24,
-//                   color: Theme.of(context).colorScheme.primary,
-//                 ),
-//               ),
-//             ),
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.all(16),
-//             child: Text(
-//               'Username',
-//               style: TextStyle(
-//                 fontSize: 18.0,
-//                 color: Theme.of(context).colorScheme.onPrimary,
-//                 fontWeight: FontWeight.w600,
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
+  @override
+  Widget? buildLeading(BuildContext context) => IconButton(
+        onPressed: () => BlocProvider.of<SearchArticleBloc>(context).add(
+          SearchArticles(query),
+        ),
+        icon: const Icon(Ionicons.ios_search),
+      );
 
-//   Widget buildDrawerContent(BuildContext context) {
-//     return Wrap(
-//       runSpacing: 16.0,
-//       children: [
-//         ListTile(
-//           leading: const Icon(Ionicons.md_settings),
-//           title: const Text('Settings'),
-//           onTap: () {
-//             Navigator.of(context).pop();
-//             PersistentNavBarNavigator.pushNewScreen(
-//               context,
-//               screen: const SettingsPage(),
-//               withNavBar: false,
-//             );
-//           },
-//         ),
-//       ],
-//     );
-//   }
-// }
+  @override
+  Widget buildResults(BuildContext context) =>
+      BlocBuilder<SearchArticleBloc, SearchArticleState>(
+        builder: (context, state) {
+          switch (state.runtimeType) {
+            case SearchArticleError:
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(state.error!.message!),
+                ),
+              );
 
-// class CategoryItemChoice {
-//   final int id;
-//   final String label;
+            case SearchArticleLoading:
+              return const Center(
+                child: CupertinoActivityIndicator(),
+              );
 
-//   CategoryItemChoice(this.id, this.label);
-// }
+            case SearchArticleSuccess:
+              return AvailableNewsContent(
+                articles: state.articles!,
+                onArticleClicked: (article) {
+                  AppRouter().push(
+                    context,
+                    ScreenRoutes.detail,
+                    arguments: article,
+                  );
+                },
+              );
+
+            default:
+              return const Center(
+                child: Text('Search any news'),
+              );
+          }
+        },
+      );
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final List<String> filteredSuggestions = suggestions
+        .where((suggestion) =>
+            suggestion.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    return ListView.builder(
+      itemCount: filteredSuggestions.length,
+      itemBuilder: (context, index) {
+        final suggestion = filteredSuggestions[index];
+        return ListTile(
+          title: Text(suggestion),
+          onTap: () {
+            query = suggestion;
+            BlocProvider.of<SearchArticleBloc>(context).add(
+              SearchArticles(query),
+            );
+          },
+        );
+      },
+    );
+  }
+}
