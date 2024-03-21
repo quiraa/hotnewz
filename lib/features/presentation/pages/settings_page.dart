@@ -117,34 +117,9 @@ class _SettingsPageState extends State<SettingsPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildChangeThemeCard(context),
-            const SizedBox(height: 16),
-            _buildCountryDropdown(context)
-          ],
+          children: [_buildCountryDropdown(context)],
         ),
       ),
-    );
-  }
-
-  Widget _buildChangeThemeCard(BuildContext context) {
-    return Row(
-      children: [
-        const Expanded(
-          flex: 1,
-          child: Text(
-            'Enable Dark Mode',
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        Switch(
-          value: true,
-          onChanged: (bool newValue) {},
-        ),
-      ],
     );
   }
 

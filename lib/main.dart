@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'News App',
-        themeMode: ThemeMode.light,
+        themeMode: ThemeMode.system,
         darkTheme: NewsTheme().darkTheme(),
         theme: NewsTheme().lightTheme(),
         onGenerateRoute: RoutesConfiguration().generateRoute,

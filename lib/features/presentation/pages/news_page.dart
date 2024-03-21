@@ -14,6 +14,7 @@ import 'package:flutter_news_app/features/presentation/bloc/search/search_articl
 import 'package:flutter_news_app/features/presentation/bloc/search/search_article_state.dart';
 import 'package:flutter_news_app/features/presentation/pages/detail_page.dart';
 import 'package:flutter_news_app/features/presentation/pages/settings_page.dart';
+import 'package:flutter_news_app/features/presentation/widgets/drawer_view.dart';
 import 'package:flutter_news_app/features/presentation/widgets/news_card_item.dart';
 
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
@@ -33,48 +34,28 @@ class _NewsPageState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SliderDrawer(
-        animationDuration: 200,
-        appBar: _buildAppBar(context),
-        slider: SingleChildScrollView(
-          child: Column(
-            children: [
-              buildDrawerHeader(context),
-              buildDrawerContent(context),
-            ],
-          ),
-        ),
-        child: Column(
-          children: [
-            _buildCategoryChips(),
-            Expanded(child: _buildBody()),
-          ],
-        ),
-      ),
+      appBar: _buildAppBar(context),
+      body: _buildBody(),
+      drawer: DrawerView(),
     );
   }
 
-  SliderAppBar _buildAppBar(BuildContext context) {
-    return SliderAppBar(
-      title: const Text(
-        'Top Headlines',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      appBarHeight: 86,
-      isTitleCenter: false,
-      drawerIconSize: 24,
-      trailing: Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: IconButton(
-          onPressed: () =>
-              showSearch(context: context, delegate: SearchBarDelegate()),
-          icon: const Icon(CupertinoIcons.search),
-        ),
-      ),
-      appBarPadding: const EdgeInsets.only(top: 40),
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: const Text('Top Headlines'),
+      surfaceTintColor: Colors.transparent,
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: IconButton(
+            onPressed: () => showSearch(
+              context: context,
+              delegate: SearchBarDelegate(),
+            ),
+            icon: const Icon(CupertinoIcons.search),
+          ),
+        )
+      ],
     );
   }
 
@@ -122,10 +103,17 @@ class _NewsPageState extends State<NewsPage> {
             );
 
           case RemoteArticlesSuccess:
-            return NewsContent(
-              articles: state.articles ?? [],
-              onArticleClicked: (article) =>
-                  _onArticlePressed(context, article),
+            return Column(
+              children: [
+                _buildCategoryChips(),
+                Expanded(
+                  child: NewsContent(
+                    articles: state.articles ?? [],
+                    onArticleClicked: (article) =>
+                        _onArticlePressed(context, article),
+                  ),
+                ),
+              ],
             );
 
           default:
@@ -140,65 +128,6 @@ class _NewsPageState extends State<NewsPage> {
       context,
       screen: DetailPage(article: article),
       withNavBar: false,
-    );
-  }
-
-  Widget buildDrawerHeader(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-      color: Theme.of(context).colorScheme.primary,
-      width: double.maxFinite,
-      height: 240,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 86,
-            height: 86,
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Text(
-                'U',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              'Username',
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildDrawerContent(BuildContext context) {
-    return Wrap(
-      runSpacing: 16.0,
-      children: [
-        ListTile(
-          leading: const Icon(CupertinoIcons.settings_solid),
-          title: const Text('Settings'),
-          onTap: () {
-            Navigator.of(context).pop();
-            PersistentNavBarNavigator.pushNewScreen(
-              context,
-              screen: const SettingsPage(),
-              withNavBar: false,
-            );
-          },
-        ),
-      ],
     );
   }
 }
@@ -225,13 +154,8 @@ class _NewsContentState extends State<NewsContent> {
     );
   }
 
-  Widget _buildBody(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(child: _buildListArticle()),
-      ],
-    );
-  }
+  Widget _buildBody(BuildContext context) =>
+      Expanded(child: _buildListArticle());
 
   Widget _buildListArticle() {
     switch (widget.articles.isNotEmpty) {

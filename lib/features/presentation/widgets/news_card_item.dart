@@ -71,21 +71,23 @@ class NewsCardItem extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             height: double.maxFinite,
             decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.08),
-                image:
-                    DecorationImage(image: imageProvider, fit: BoxFit.cover)),
+              color:
+                  Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+            ),
           ),
         ),
       ),
       progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
         padding: const EdgeInsetsDirectional.only(end: 14),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20.0),
+          borderRadius: BorderRadius.circular(20),
           child: Container(
             width: MediaQuery.of(context).size.width / 3,
             height: double.maxFinite,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.08),
+              color:
+                  Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
             ),
             child: const CupertinoActivityIndicator(),
           ),
@@ -99,7 +101,8 @@ class NewsCardItem extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 3,
             height: double.maxFinite,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.08),
+              color:
+                  Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
             ),
             child: const Icon(Icons.image_not_supported_rounded),
           ),
@@ -125,7 +128,6 @@ class NewsCardItem extends StatelessWidget {
                 fontFamily: 'Butler',
                 fontWeight: FontWeight.w900,
                 fontSize: 18,
-                color: Colors.black87,
               ),
             ),
 
